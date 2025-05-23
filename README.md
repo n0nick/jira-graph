@@ -1,7 +1,8 @@
 # Jira Epic Dependency Graph Generator
 
-This script generates a Mermaid flowchart showing the dependency relationships between issues in a Jira epic. It's particularly
-useful for visualizing the structure and progress of complex epics.
+This script generates a [Mermaid](https://mermaid.js.org/) flowchart showing the dependency
+relationships between issues in a Jira epic.  It's particularly useful for visualizing the structure
+and progress of complex epics.
 
 ## Setup
 
@@ -37,6 +38,7 @@ python graph.py DATA-3377
 ### Command Line Options
 
 - `EPIC-KEY`: The key of the epic to analyze (required)
+- `--skip-closed`: Skip rendering closed issues in the graph
 - `--blocks-linktype`: The Jira link type to follow (default: "Blocks")
 - `--closed-status`: The status name that indicates a closed issue (default: "closed")
 
