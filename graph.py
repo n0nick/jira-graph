@@ -2,7 +2,7 @@
 This script generates a Mermaid dependency graph for a Jira epic.
 
 Usage:
-python graph.py <epic_key> [--blocks-linktype <link_type>] [--closed-status <status>]
+python graph.py <epic_key> [--blocks-linktype <link_type>] [--closed-status <status>] [--skip-closed]
 """
 
 
@@ -21,6 +21,8 @@ parser.add_argument('--blocks-linktype', default='Blocks',
     help='The Jira link type to follow (default: Blocks)')
 parser.add_argument('--closed-status', default='closed',
     help='The status name that indicates a closed issue (default: closed)')
+parser.add_argument('--skip-closed', action='store_true',
+    help='Skip closed issues in the graph')
 args = parser.parse_args()
 
 # Get credentials from environment variables
@@ -49,6 +51,8 @@ for issue in issues:
     key = issue.key
     summary = issue.fields.summary.replace('"', '\\"')
     status = issue.fields.status.name.lower()
+    if args.skip_closed and status == args.closed_status:
+        continue
     nodes[key] = (summary, status)
 
     for link in issue.fields.issuelinks:
