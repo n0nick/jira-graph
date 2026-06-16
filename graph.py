@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.9"
 # dependencies = [
-#     "jira==3.5.2",
+#     "jira==3.10.5",
 #     "python-dotenv==1.0.1",
 # ]
 # ///
@@ -16,7 +16,9 @@ Usage:
 
 import argparse
 import os
+import sys
 from jira import JIRA
+from jira.exceptions import JIRAError
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -47,9 +49,24 @@ jira = JIRA(
     basic_auth=(jira_email, jira_token)
 )
 
+# enhanced_search_issues returns an empty list (not an error) when auth fails, which would
+# silently produce a graph with only the epic node — so verify credentials up front.
+try:
+    jira.myself()
+except JIRAError as e:
+    sys.exit(f"Jira authentication failed (HTTP {e.status_code}) for {jira_email} at {jira_url}.\n"
+             f"Check JIRA_API_TOKEN in .env — the token may be expired or revoked.")
+
 # Get all child issues in the epic
 epic_key = args.epic_key
-issues = jira.search_issues(f'"Epic Link" = {epic_key}', maxResults=500)
+# Atlassian removed the legacy /rest/api/2/search endpoint (CHANGE-2046);
+# enhanced_search_issues hits /rest/api/3/search/jql. maxResults=False pages through all results.
+# Epic children link via "parent"; the legacy "Epic Link" field no longer matches on migrated projects.
+issues = jira.enhanced_search_issues(f'parent = {epic_key}', maxResults=False)
+
+if not issues:
+    sys.exit(f"No child issues found under {epic_key}. "
+             f"Confirm it's an epic with children (JQL: parent = {epic_key}).")
 
 nodes = {}
 edges = []

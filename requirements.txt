@@ -1,2 +1,2 @@
-jira-python==3.5.2
+jira==3.10.5
 python-dotenv==1.0.1 
