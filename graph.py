@@ -1,8 +1,16 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.9"
+# dependencies = [
+#     "jira==3.5.2",
+#     "python-dotenv==1.0.1",
+# ]
+# ///
 """
 This script generates a Mermaid dependency graph for a Jira epic.
 
 Usage:
-python graph.py <epic_key> [--blocks-linktype <link_type>] [--closed-status <status>] [--skip-closed]
+./graph.py <epic_key> [--blocks-linktype <link_type>] [--closed-status <status>] [--skip-closed]
 """
 
 
